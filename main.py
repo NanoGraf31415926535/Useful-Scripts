@@ -17,26 +17,51 @@ class UsefulScriptsGUI:
         self.master = master
         master.title("Useful Scripts")
 
+        self.buttons = {}  # Store buttons for hover effect
+        self.style = ttk.Style()
+        self.default_button_style = 'TButton'
+        self.hover_button_style = 'Hover.TButton'
+        self._configure_styles()
+
         self.create_widgets()
+
+    def _configure_styles(self):
+        self.style.configure(self.default_button_style, padding=15, font=('Arial', 16))
+        self.style.configure('TLabel', padding=10, font=('Arial', 18))
+        self.style.configure(self.hover_button_style, background='#e0e0e0')
 
     def create_widgets(self):
         ttk.Label(self.master, text="Select a script to run:").pack(pady=10)
 
-        ttk.Button(self.master, text="1. Start Desktop Monitoring", command=self.run_desktop_monitor).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="2. File Search", command=self.run_file_search).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="3. Duplicate File Finder", command=self.run_duplicate_finder).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="4. Bulk Rename Tool", command=self.run_bulk_rename).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="5. File Type Counter", command=self.run_file_type_counter).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="6. Create Empty Files/Folders", command=self.run_create_empty).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="7. System Info Display", command=self.run_system_info_gui).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="8. Network Speed Test", command=self.run_network_speed_test_gui).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="9. Clipboard History", command=self.run_clipboard_history_gui).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="10. Clear Temporary Files", command=self.run_clear_temp_gui).pack(pady=5, padx=20, fill=tk.X)
-        ttk.Button(self.master, text="11. Clear Python Package Cache (pip)", command=self.run_clear_pip_cache_gui).pack(pady=5, padx=20, fill=tk.X)
+        button_data = [
+            ("1. Start Desktop Monitoring", self.run_desktop_monitor),
+            ("2. File Search", self.run_file_search),
+            ("3. Duplicate File Finder", self.run_duplicate_finder),
+            ("4. Bulk Rename Tool", self.run_bulk_rename),
+            ("5. File Type Counter", self.run_file_type_counter),
+            ("6. Create Empty Files/Folders", self.run_create_empty),
+            ("7. System Info Display", self.run_system_info_gui),
+            ("8. Network Speed Test", self.run_network_speed_test_gui),
+            ("9. Clipboard History", self.run_clipboard_history_gui),
+            ("10. Clear Temporary Files", self.run_clear_temp_gui),
+            ("11. Clear Python Package Cache (pip)", self.run_clear_pip_cache_gui),
+            ("Exit", self.master.quit)
+        ]
+
+        for text, command in button_data:
+            button = ttk.Button(self.master, text=text, command=command, style=self.default_button_style)
+            button.pack(pady=5, padx=20, fill=tk.X)
+            button.bind("<Enter>", self.on_enter)
+            button.bind("<Leave>", self.on_leave)
+            self.buttons[button] = self.default_button_style
 
         ttk.Separator(self.master).pack(pady=10, fill=tk.X, padx=10)
 
-        ttk.Button(self.master, text="Exit", command=self.master.quit).pack(pady=10, padx=20, fill=tk.X)
+    def on_enter(self, event):
+        event.widget.config(style=self.hover_button_style)
+
+    def on_leave(self, event):
+        event.widget.config(style=self.default_button_style)
 
     def run_desktop_monitor(self):
         desktop_monitor.create_gui(self.master)
@@ -73,5 +98,10 @@ class UsefulScriptsGUI:
 
 if __name__ == "__main__":
     root = tk.Tk()
+
+    style = ttk.Style()
+    print("Available Themes:", style.theme_names())
+    style.theme_use('clam')
+
     gui = UsefulScriptsGUI(root)
     root.mainloop()
